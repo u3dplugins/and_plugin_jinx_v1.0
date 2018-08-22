@@ -12,6 +12,13 @@ import android.content.Intent;
 import android.net.Uri;
 
 public class SDKPlgJinx  extends PluginBasic{
+	
+	public SDKPlgJinx() {
+		super();
+		this.logLevel = LEV_LOG_NORMAL;
+		this.logHead = "jinx";
+	}
+	
 	@Override
 	protected void handlerMsg(String cmd, JSONObject data) throws Exception {
 		String strVal1 = "",strVal2 = "";
