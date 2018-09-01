@@ -1,0 +1,18 @@
+{
+	"status": 1,
+	"msg": "获取成功",
+	"data": {
+		"login_sdk": {
+			"sdk_id": "1000",
+			"jar_name": "cn.mangofun.xsdk.demo.platform.PluginImpl",
+			"extr": {
+				"packagename": "com.xxx.xxx.xxx",
+				"extend": ""
+			}
+		},
+		"game_id": "1000108",
+		"game_type": "1",
+		"server_version": "1",
+		"client_secret": "GbgSfD3LY9STqua3I9UbYgMrD2epUv75"
+	}
+}
