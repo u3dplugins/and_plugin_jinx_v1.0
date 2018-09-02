@@ -45,7 +45,7 @@ public class SDKPlgJinx extends PluginBasic implements XSDKCallback.Callback {
 
 	String rid = "", rname = "", rlev = "1";
 	String serverId = "16888888";
-	String serverName = "1002410001";
+	String serverName = "芒果互娱-jinx国内服务";
 
 	boolean _isLogined = false;
 	JSONObject objJsonGoods = null; // 商品计费列表
@@ -90,10 +90,14 @@ public class SDKPlgJinx extends PluginBasic implements XSDKCallback.Callback {
 						}
 
 						_InitGameData();
-						mapData.put("xsdk_user_id", uid);
-						mapData.put("xsdk_user_name", uname);
 						_reLoginCount = 5;
 						_isLogined = true;
+						
+						mapData.put("xsdk_user_id", uid);
+						mapData.put("xsdk_user_name", uname);
+						mapData.put("hasForum", _hasForum());
+						mapData.put("hasCenter", _hasPlatformCenter());
+						mapData.put("hasService", _hasService());
 						Tools.msg2U3D(CODE_SUCCESS, "登录成功", CMD_Login, mapData);
 					} catch (Exception e) {
 						e.printStackTrace();
