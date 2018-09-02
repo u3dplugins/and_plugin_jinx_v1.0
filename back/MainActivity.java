@@ -158,7 +158,7 @@ public class MainActivity extends com.unity3d.player.UnityPlayerActivity {
 		}
 	}
 	
-	static Handler mHandler = null;
+	static private Handler mHandler = null;
 
 	static public void sendMsg(int state) {
 		if (mHandler == null)

@@ -33,9 +33,7 @@ public class MainActivity extends com.unity3d.player.UnityPlayerActivity {
 		super.onCreate(bundle);
 		initMHandler();
 		this.m_mgrTM = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-//		XSDK.getInstance().init(MainActivity.this, mSuperSDKListener);
-		// 横屏
-		// setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+		XSDK.getInstance().init(MainActivity.this, SDKPlgJinx.getInstance());
 	}
 
 	@Override
@@ -107,14 +105,6 @@ public class MainActivity extends com.unity3d.player.UnityPlayerActivity {
 		return false;
 	}
 
-//	@Override
-//	public boolean dispatchKeyEvent(KeyEvent event) {
-//		if(_KeyCodeEvent(event.getKeyCode(), event)){
-//			return true;
-//		}
-//		return super.dispatchKeyEvent(event);
-//	}
-
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (_KeyCodeEvent(keyCode, event)) {
@@ -125,7 +115,7 @@ public class MainActivity extends com.unity3d.player.UnityPlayerActivity {
 
 	@Override
 	public void onBackPressed() {
-		super.onBackPressed();
+		SDKPlgJinx.getInstance().doExit();
 	}
 
 	void showTip4Exit() {
@@ -133,7 +123,7 @@ public class MainActivity extends com.unity3d.player.UnityPlayerActivity {
 				.setPositiveButton("确定", new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						exitGame();
+						SDKPlgJinx.getInstance().callExitGame(true);
 					}
 				}).setNegativeButton("取消", new DialogInterface.OnClickListener() {
 					@Override
@@ -159,6 +149,9 @@ public class MainActivity extends com.unity3d.player.UnityPlayerActivity {
 					case 0:
 						exitGame();
 						break;
+					case 1:
+						showTip4Exit();
+						break;
 					default:
 						break;
 					}
@@ -168,7 +161,7 @@ public class MainActivity extends com.unity3d.player.UnityPlayerActivity {
 		}
 	}
 
-	static Handler mHandler = null;
+	static private Handler mHandler = null;
 
 	static public void sendMsg(int state) {
 		if (mHandler == null)
