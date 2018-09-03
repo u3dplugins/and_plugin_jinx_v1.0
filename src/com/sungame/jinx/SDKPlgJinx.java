@@ -36,13 +36,15 @@ public class SDKPlgJinx extends PluginBasic implements XSDKCallback.Callback {
 	static final String CMD_ZCreateRole = "xskd_createRole";
 	static final String CMD_ZEntryRole = "xskd_entryRole";
 	static final String CMD_ZUpRole = "xskd_upRole";
+	static final String CMD_ZGetUser = "xskd_getUser";
 
 	private GameData gameData = new GameData();
 	private String _strFmtResult = "funcName=[%s],data=[%s]";
 
 	int _reInitCount = 6;
 	int _reLoginCount = 5;
-
+	
+	String uid = "",uname = "";
 	String rid = "", rname = "", rlev = "1";
 	String serverId = "16888888";
 	String serverName = "芒果互娱-jinx国内服务";
@@ -83,8 +85,8 @@ public class SDKPlgJinx extends PluginBasic implements XSDKCallback.Callback {
 						JSONObject jsonObj = new JSONObject(result);
 						// String sdkTicket = jsonObj.getString("sdkTicket");
 						JSONObject userInfo = jsonObj.getJSONObject("userInfo");
-						String uid = userInfo.getString("userId");
-						String uname = userInfo.getString("login_sdk_name");
+						uid = userInfo.getString("userId");
+						uname = userInfo.getString("login_sdk_name");
 						if(uname == null || "".equals(uname) || "null".equalsIgnoreCase(uname)) {
 							uname = "";
 						}
@@ -93,12 +95,7 @@ public class SDKPlgJinx extends PluginBasic implements XSDKCallback.Callback {
 						_reLoginCount = 5;
 						_isLogined = true;
 						
-						mapData.put("xsdk_user_id", uid);
-						mapData.put("xsdk_user_name", uname);
-						mapData.put("hasForum", _hasForum());
-						mapData.put("hasCenter", _hasPlatformCenter());
-						mapData.put("hasService", _hasService());
-						Tools.msg2U3D(CODE_SUCCESS, "登录成功", CMD_Login, mapData);
+						_UserInfo(CMD_Login);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -209,6 +206,9 @@ public class SDKPlgJinx extends PluginBasic implements XSDKCallback.Callback {
 		case CMD_ZUpRole:
 			_val1 = data.getString("rlev");
 			_upRole(_val1);
+			break;
+		case CMD_ZGetUser:
+			_UserInfo(null);
 			break;
 		default:
 			super.handlerMsg(cmd, data);
@@ -368,7 +368,25 @@ public class SDKPlgJinx extends PluginBasic implements XSDKCallback.Callback {
 		
 		XSDK.getInstance().pay(amount, productId, productName, productDesc, "10", "钻石", customData, gameData);
 	}
+	
+	void _UserInfo(String cmd) throws Exception {
+		JSONObject data = new JSONObject();
+		data.put("isLogined",_isLogined);
+		data.put("user_id", uid);
+		data.put("user_name", uname);
+		data.put("hasForum", _hasForum());
+		data.put("hasCenter", _hasPlatformCenter());
+		data.put("hasService", _hasService());
 
+		if (cmd != null && !"".equals(cmd)) {
+			data.put("cmd", cmd);
+			Tools.msg2U3D(CODE_SUCCESS, "", data);
+			data.remove("cmd");
+		}
+		
+		data.put("cmd", CMD_ZGetUser);
+		Tools.msg2U3D(CODE_SUCCESS, "", data);
+	}
 	static private SDKPlgJinx _instance;
 
 	static public SDKPlgJinx getInstance() {
