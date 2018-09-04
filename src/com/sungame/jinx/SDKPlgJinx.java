@@ -298,6 +298,7 @@ public class SDKPlgJinx extends PluginBasic implements XSDKCallback.Callback {
 
 	public void callExitGame(boolean imm) {
 		if (imm) {
+			Tools.msg2U3D(CODE_SUCCESS, "成功退出", CMD_Exit,mapData);
 			XSDK.getInstance().onExitGame(gameData);
 			MainActivity.sendMsg(0);
 		} else {
