@@ -54,24 +54,22 @@ public class SDKPlgJinx extends PluginBasic implements XSDKCallback.Callback {
 
 	@Override
 	public void result(String funcName, String data) {
-
-		logInfo(String.format(_strFmtResult, funcName, data));
-
-		JSONObject obj = null;
-		int code = 0;
-		boolean isSuccess = false;
-		String result = null;
-		// 失败的时候都打印data
 		try {
-			obj = new JSONObject(data);
-			code = obj.getInt(Constants.KEY_CODE);
-			result = obj.getString(Constants.KEY_RESULT);
+			logInfo(String.format(_strFmtResult, funcName, data));
+			
+			// 失败的时候都打印data
+			JSONObject obj = new JSONObject(data);
+			int code = obj.getInt(Constants.KEY_CODE);
+			String result = obj.getString(Constants.KEY_RESULT);
 
-			isSuccess = code == ErrorCode.SUCCESS;
+			boolean isSuccess = code == ErrorCode.SUCCESS;
+			logInfo("是否成功 = " + isSuccess);
 			if (Constants.FUNC_INIT.equalsIgnoreCase(funcName)) {
 				if (isSuccess) {
+					logInfo("初始化成功,調用登录");
 					_login(true);
 				} else {
+					logInfo("初始化失败,重新初始化");
 					if (_reInitCount > 0) {
 						_reInitCount--;
 						doInitSDK();
