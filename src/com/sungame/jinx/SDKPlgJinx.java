@@ -146,6 +146,7 @@ public class SDKPlgJinx extends PluginBasic implements XSDKCallback.Callback {
 	@Override
 	protected void handlerMsg(final String cmd, JSONObject data) throws Exception {
 		String _val1 = "", _val2 = "", _val3 = "", _val4 = "", _val5 = "";
+		long _valL1 = 0;
 		switch (cmd) {
 		case CMD_Exit:
 			doExit();
@@ -198,14 +199,17 @@ public class SDKPlgJinx extends PluginBasic implements XSDKCallback.Callback {
 			_initRole(_val1, _val2, _val3, _val4, _val5);
 			break;
 		case CMD_ZCreateRole:
-			_createRole();
+			_valL1 = data.getLong("sec");
+			_createRole(_valL1);
 			break;
 		case CMD_ZEntryRole:
-			_entryRole();
+			_valL1 = data.getLong("sec");
+			_entryRole(_valL1);
 			break;
 		case CMD_ZUpRole:
 			_val1 = data.getString("rlev");
-			_upRole(_val1);
+			_valL1 = data.getLong("sec");
+			_upRole(_val1,_valL1);
 			break;
 		case CMD_ZGetUser:
 			_UserInfo(null);
@@ -269,22 +273,25 @@ public class SDKPlgJinx extends PluginBasic implements XSDKCallback.Callback {
 		_initRole(relv, null, null, null, null);
 	}
 	
-	void _createRole() {
+	void _createRole(long sec) {
 		if (!_isLogined)
 			return;
+		gameData.setData("roleCreateTime", String.valueOf(sec));
 		XSDK.getInstance().onCreatRole(gameData);
 	}
 
-	void _entryRole() {
+	void _entryRole(long sec) {
 		if (!_isLogined)
 			return;
+		gameData.setData("roleCreateTime", String.valueOf(sec));
 		XSDK.getInstance().onEnterGame(gameData);
 	}
 
-	void _upRole(String rlev) {
+	void _upRole(String rlev,long sec) {
 		if (!_isLogined)
 			return;
 		_initRole(rlev);
+		gameData.setData("roleCreateTime", String.valueOf(sec));
 		XSDK.getInstance().onLevelUp(gameData);
 	}
 
