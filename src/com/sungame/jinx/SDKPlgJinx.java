@@ -49,6 +49,7 @@ public class SDKPlgJinx extends PluginBasic implements XSDKCallback.Callback {
 	String serverId = "16888888";
 	String serverName = "芒果互娱-jinx国内服务";
 
+	boolean _isInited = false;
 	boolean _isLogined = false;
 	JSONObject objJsonGoods = null; // 商品计费列表
 
@@ -60,16 +61,15 @@ public class SDKPlgJinx extends PluginBasic implements XSDKCallback.Callback {
 			// 失败的时候都打印data
 			JSONObject obj = new JSONObject(data);
 			int code = obj.getInt(Constants.KEY_CODE);
-			String result = obj.getString(Constants.KEY_RESULT);
+			String result = "";
+			if(obj.has(Constants.KEY_RESULT))
+				result = obj.getString(Constants.KEY_RESULT);
 
 			boolean isSuccess = code == ErrorCode.SUCCESS;
-			logInfo("是否成功 = " + isSuccess);
 			if (Constants.FUNC_INIT.equalsIgnoreCase(funcName)) {
 				if (isSuccess) {
-					logInfo("初始化成功,調用登录");
-					_login(true);
+					_isInited = true;
 				} else {
-					logInfo("初始化失败,重新初始化");
 					if (_reInitCount > 0) {
 						_reInitCount--;
 						doInitSDK();
@@ -312,6 +312,18 @@ public class SDKPlgJinx extends PluginBasic implements XSDKCallback.Callback {
 	}
 
 	void _login(boolean isReLogin) {
+		if(!_isInited) {
+			Tools.msg2U3D(CODE_FAILS, "登录失败:尚未初始化!",CMD_Login, new JSONObject());
+			return;
+		}
+		if(_isLogined) {
+			try {
+				_UserInfo(CMD_Login);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return;
+		}
 		if (isReLogin) {
 			_reLoginCount = 5;
 		}
@@ -320,6 +332,8 @@ public class SDKPlgJinx extends PluginBasic implements XSDKCallback.Callback {
 	}
 
 	void _logout() {
+		if(!_isLogined)
+			return;
 		XSDK.getInstance().logout(gameData);
 	}
 
