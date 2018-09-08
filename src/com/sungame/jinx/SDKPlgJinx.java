@@ -316,14 +316,6 @@ public class SDKPlgJinx extends PluginBasic implements XSDKCallback.Callback {
 			Tools.msg2U3D(CODE_FAILS, "登录失败:尚未初始化!",CMD_Login, new JSONObject());
 			return;
 		}
-		if(_isLogined) {
-			try {
-				_UserInfo(CMD_Login);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			return;
-		}
 		if (isReLogin) {
 			_reLoginCount = 5;
 		}
