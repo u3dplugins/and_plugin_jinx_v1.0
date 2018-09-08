@@ -79,24 +79,21 @@ public class SDKPlgJinx extends PluginBasic implements XSDKCallback.Callback {
 				}
 			} else if (Constants.FUNC_LOGIN.equalsIgnoreCase(funcName)) {
 				if (isSuccess) {
-					try {
-						JSONObject jsonObj = new JSONObject(result);
-						// String sdkTicket = jsonObj.getString("sdkTicket");
-						JSONObject userInfo = jsonObj.getJSONObject("userInfo");
-						uid = userInfo.getString("userId");
+					JSONObject jsonObj = new JSONObject(result);
+					// String sdkTicket = jsonObj.getString("sdkTicket");
+					JSONObject userInfo = jsonObj.getJSONObject("userInfo");
+					uid = userInfo.getString("userId");
+					if(userInfo.has("login_sdk_name"))
 						uname = userInfo.getString("login_sdk_name");
-						if(uname == null || "".equals(uname) || "null".equalsIgnoreCase(uname)) {
-							uname = "";
-						}
-
-						_InitGameData();
-						_reLoginCount = 5;
-						_isLogined = true;
-						
-						_UserInfo(CMD_Login);
-					} catch (Exception e) {
-						e.printStackTrace();
+					if(uname == null || "".equals(uname) || "null".equalsIgnoreCase(uname)) {
+						uname = "";
 					}
+
+					_InitGameData();
+					_reLoginCount = 5;
+					_isLogined = true;
+					
+					_UserInfo(CMD_Login);
 				} else {
 					if (_reLoginCount > 0) {
 						_reLoginCount--;
