@@ -2,6 +2,7 @@ package com.sungame.jinx;
 
 import org.json.JSONObject;
 
+import com.bowlong.security.DecodeEx;
 import com.sdkplugin.bridge.U3DBridge;
 import com.sdkplugin.extend.PluginBasic;
 import com.sdkplugin.tools.Tools;
@@ -176,8 +177,8 @@ public class SDKPlgJinx extends PluginBasic implements XSDKCallback.Callback {
 		case CMD_Pay:
 			_val1 = data.getString("amount");
 			_val2 = data.getString("productId");
-			_val3  = data.getString("productName");
-			_val4 = data.getString("productDesc");
+			_val3  = DecodeEx.unUnicode(data.getString("productName"));
+			_val4 = DecodeEx.unUnicode(data.getString("productDesc"));
 			_val5 = data.getString("customData");
 			_pay(_val1, _val2, _val3, _val4, _val5);
 			break;
