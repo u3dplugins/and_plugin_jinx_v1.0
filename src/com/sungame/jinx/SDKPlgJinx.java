@@ -10,6 +10,7 @@ import com.sdkplugin.tools.Tools;
 import cn.mangofun.xsdk.framework.Constants;
 import cn.mangofun.xsdk.framework.ErrorCode;
 import cn.mangofun.xsdk.framework.XSDKCallback;
+import cn.mangofun.xsdk.framework.data.AccountData;
 import cn.mangofun.xsdk.framework.data.GameData;
 import cn.mangofun.xsdk.openapi.XSDK;
 
@@ -38,6 +39,7 @@ public class SDKPlgJinx extends PluginBasic implements XSDKCallback.Callback {
 	static final String CMD_ZEntryRole = "xskd_entryRole";
 	static final String CMD_ZUpRole = "xskd_upRole";
 	static final String CMD_ZGetUser = "xskd_getUser";
+	static final String CMD_ZSetUserLgID = "xskd_setUserLgId";
 
 	private GameData gameData = new GameData();
 	private String _strFmtResult = "funcName=[%s],data=[%s]";
@@ -50,8 +52,7 @@ public class SDKPlgJinx extends PluginBasic implements XSDKCallback.Callback {
 	String serverId = "16888888";
 	String serverName = "芒果互娱-jinx国内服务";
 
-	boolean _isInited = false;
-	boolean _isLogined = false;
+	boolean _isInited = false,_isLogined = false,_hasUlgID = false;
 	JSONObject objJsonGoods = null; // 商品计费列表
 
 	@Override
@@ -80,14 +81,22 @@ public class SDKPlgJinx extends PluginBasic implements XSDKCallback.Callback {
 				}
 			} else if (Constants.FUNC_LOGIN.equalsIgnoreCase(funcName)) {
 				if (isSuccess) {
-					JSONObject jsonObj = new JSONObject(result);
-					// String sdkTicket = jsonObj.getString("sdkTicket");
-					JSONObject userInfo = jsonObj.getJSONObject("userInfo");
-					uid = userInfo.getString("userId");
-					if(userInfo.has("login_sdk_name"))
-						uname = userInfo.getString("login_sdk_name");
-					if(uname == null || "".equals(uname) || "null".equalsIgnoreCase(uname)) {
-						uname = "";
+					_hasUlgID = !"".equals(result);
+					uname = "";
+					uid = "";
+					if(_hasUlgID) {
+						JSONObject jsonObj = new JSONObject(result);
+						// String sdkTicket = jsonObj.getString("sdkTicket");
+						_hasUlgID = jsonObj.has("userInfo");
+						if(_hasUlgID) {
+							JSONObject userInfo = jsonObj.getJSONObject("userInfo");
+							_hasUlgID = userInfo.has("userId");
+							if(_hasUlgID) {
+								uid = userInfo.getString("userId");
+								if(userInfo.has("login_sdk_name"))
+									uname = userInfo.getString("login_sdk_name");
+							}
+						}
 					}
 
 					_InitGameData();
@@ -107,19 +116,14 @@ public class SDKPlgJinx extends PluginBasic implements XSDKCallback.Callback {
 				Tools.msg2U3D(isSuccess ? CODE_SUCCESS : CODE_FAILS, isSuccess ? "注销成功" : "注销失败", CMD_Logout, mapData);
 				if (isSuccess) {
 					_isLogined = false;
+					_hasUlgID = false;
 					gameData.setServerId("");
 					gameData.setServerName("");
 					gameData.setRoleId("");
 					gameData.setRoleName("");
 					gameData.setRoleLevel("");
 					gameData.setData("roleCreateTime", "");
-					if (Constants.LOGOUT_WITH_NOT_OPEN_LOGIN.equalsIgnoreCase(result)) {
-						// 注销之后不会自动打开登录页面,游戏想要做全部平台注销后都自动打开调用登录，可以在这里面调用
-						_login(true);
-					} else if (Constants.LOGOUT_WITH_OPEN_LOGIN.equalsIgnoreCase(result)) {
-						// 注销之后会自动打开登录页面
-						_reLoginCount = 5;
-					}
+					_reLoginCount = 5;
 				}
 			} else if (Constants.FUNC_GET_ORDER_ID.equalsIgnoreCase(funcName)) {
 				Tools.msg2U3D(CODE_WAIT, "订单号请求成功", CMD_Pay, obj);
@@ -209,6 +213,10 @@ public class SDKPlgJinx extends PluginBasic implements XSDKCallback.Callback {
 			break;
 		case CMD_ZGetUser:
 			_UserInfo(null);
+			break;
+		case CMD_ZSetUserLgID:
+			_val1 = data.getString("ulgid");
+			_setUserLgID(_val1);
 			break;
 		default:
 			super.handlerMsg(cmd, data);
@@ -318,6 +326,7 @@ public class SDKPlgJinx extends PluginBasic implements XSDKCallback.Callback {
 			_reLoginCount = 5;
 		}
 		_isLogined = false;
+		_hasUlgID = false;
 		XSDK.getInstance().login();
 	}
 
@@ -382,6 +391,7 @@ public class SDKPlgJinx extends PluginBasic implements XSDKCallback.Callback {
 	void _UserInfo(String cmd) throws Exception {
 		JSONObject data = new JSONObject();
 		data.put("isLogined",_isLogined);
+		data.put("hasUlgID", _hasUlgID);
 		data.put("user_id", uid);
 		data.put("user_name", uname);
 		data.put("hasForum", _hasForum());
@@ -397,6 +407,11 @@ public class SDKPlgJinx extends PluginBasic implements XSDKCallback.Callback {
 		data.put("cmd", CMD_ZGetUser);
 		Tools.msg2U3D(CODE_SUCCESS, "", data);
 	}
+	
+	void _setUserLgID(String ulgid) {
+		AccountData.getInstance().setAccountId(ulgid);
+	}
+	
 	static private SDKPlgJinx _instance;
 
 	static public SDKPlgJinx getInstance() {
