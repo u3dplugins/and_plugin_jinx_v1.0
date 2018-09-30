@@ -31,6 +31,7 @@ public class MainActivity extends com.unity3d.player.UnityPlayerActivity {
 	@Override
 	protected void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
+		_bug4U56Fragment();
 		initMHandler();
 		this.m_mgrTM = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
 		XSDK.getInstance().init(MainActivity.this, SDKPlgJinx.getInstance());
@@ -90,6 +91,20 @@ public class MainActivity extends com.unity3d.player.UnityPlayerActivity {
 	protected void onStop() {
 		super.onStop();
 		XSDK.getInstance().onStop();
+	}
+	
+	void _bug4U56Fragment(boolean _isFlags) {
+		getWindow().setFormat(2);
+		this.mUnityPlayer = new CUnityPlayer(this);
+	    if (_isFlags && this.mUnityPlayer.getSettings().getBoolean("hide_status_bar", true)) {
+	      getWindow().setFlags(1024, 1024);
+	    }
+	    setContentView(this.mUnityPlayer);
+	    this.mUnityPlayer.requestFocus();
+	}
+	
+	void _bug4U56Fragment() {
+		_bug4U56Fragment(true);
 	}
 
 	boolean _KeyCodeEvent(int keyCode, KeyEvent event) {
